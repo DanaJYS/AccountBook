@@ -7,7 +7,7 @@ IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-	wxFrame* frame = new MyFrame();
+	wxFrame* frame = new MyFrame(wxT("AccountBook"));
 	frame->Show(true);
 	return true;
 }
