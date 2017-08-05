@@ -16,6 +16,10 @@ MyFrame::MyFrame(const wxString &title)
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
+	typeTotalNum.fType0TotalNum = 0;
+	typeTotalNum.fType1TotalNum = 0;
+	typeTotalNum.fTotalNum = 0;
+
 	InitMainUI();
 
 	InsertPos = 0;
@@ -59,6 +63,10 @@ void MyFrame::InitMainUI()
 	m_grid->EnableDragColMove( false );
 	m_grid->EnableDragColSize( true );
 	m_grid->SetColLabelSize( 30 );
+	for (int i=0; i<3; i++)
+	{
+		m_grid->SetColSize(i, 150);
+	}
 	m_grid->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
 
 	// Rows
@@ -73,15 +81,20 @@ void MyFrame::InitMainUI()
 	m_grid->SetColLabelValue( 0, wxT("项目") );
 	m_grid->SetColLabelValue( 1, wxT("时间(月/日/年 时:分:秒)") );
 	m_grid->SetColLabelValue( 2, wxT("金额") );
+
+	wxString wxStrType0Num = wxT("收入=")+wxString::Format(wxT("%.3f"), typeTotalNum.fType0TotalNum);
+	wxString wxStrType1Num = wxT("支出=")+wxString::Format(wxT("%.3f"), typeTotalNum.fType1TotalNum);
+	wxString wxStrTotalNum = wxT("结余=")+wxString::Format(wxT("%.3f"), typeTotalNum.fTotalNum);
+	m_grid->SetCellValue(0, 0, wxStrType0Num);
+	m_grid->SetCellValue(0, 1, wxStrType1Num);
+	m_grid->SetCellValue(0, 2, wxStrTotalNum);
+	wxColor color = RGB(0,0,200);
+	m_grid->SetCellBackgroundColour(color, 0, 0);
+	m_grid->SetCellBackgroundColour(color, 0, 1);
+	m_grid->SetCellBackgroundColour(color, 0, 2);
 	//m_grid->AutoSizeColumn(1);
-	m_grid->AutoSizeColLabelSize(1);
-	// 	wxColor color = RGB(200, 0, 0);
-	// 	m_grid->SetCellBackgroundColour(color, 1, 1);
-	// 	m_grid->SetCellValue(wxT("2017/08/06 16:03"), 1, 0);
-	// 	m_grid->SetCellValue(wxT("2017/08/05 16:03"), 1, 1);
-	// 	m_grid->SetCellValue(wxT("2017/08/06 16:03"), 1, 2);
-	// 	m_grid->AutoSize();
-	//m_grid->Fit();
+	//m_grid->AutoSizeColLabelSize(1);
+	
 	gridSizer->Add( m_grid, 1, wxALL|wxEXPAND, 5 );
 
 
@@ -145,15 +158,30 @@ void MyFrame::OnMonTextCtrlEnter(wxCommandEvent& event)
 	if ( InsertNodeToList(MyGridItemNode) )
 	{
 		m_grid->InsertRows(InsertPos, 1);
+		int GridRowNum = m_grid->GetNumberRows()-1;
 		if (MyGridItemNode->cItemType == 0)
 		{
 			m_grid->SetCellValue(InsertPos, 0, wxT("收入"));
 			backgroundColor = RGB(200, 0, 0);
+
+			typeTotalNum.fType0TotalNum += MyGridItemNode->fItemNum;
+			typeTotalNum.fTotalNum += MyGridItemNode->fItemNum;
+			wxString wxStrType0Num = wxT("收入=")+wxString::Format(wxT("%.3f"), typeTotalNum.fType0TotalNum);
+			wxString wxStrTotalNum = wxT("结余=")+wxString::Format(wxT("%.3f"), typeTotalNum.fTotalNum);
+			m_grid->SetCellValue(wxStrType0Num, GridRowNum, 0);
+			m_grid->SetCellValue(wxStrTotalNum, GridRowNum, 2);
 		}
 		else if (MyGridItemNode->cItemType == 1)
 		{
 			m_grid->SetCellValue(InsertPos, 0, wxT("支出"));
 			backgroundColor = RGB(200, 200, 0);
+
+			typeTotalNum.fType1TotalNum += MyGridItemNode->fItemNum;
+			typeTotalNum.fTotalNum -= MyGridItemNode->fItemNum;
+			wxString wxStrType1Num = wxT("支出=")+wxString::Format(wxT("%.3f"), typeTotalNum.fType1TotalNum);
+			wxString wxStrTotalNum = wxT("结余=")+wxString::Format(wxT("%.3f"), typeTotalNum.fTotalNum);
+			m_grid->SetCellValue(wxStrType1Num, GridRowNum, 1);
+			m_grid->SetCellValue(wxStrTotalNum, GridRowNum, 2);
 		}
 		
 		string strDispTime = MyGridItemNode->stItemTime.Month+"/"+MyGridItemNode->stItemTime.Day+"/"+
@@ -161,7 +189,7 @@ void MyFrame::OnMonTextCtrlEnter(wxCommandEvent& event)
 		wxString wxStrDispTime(strDispTime);
 		m_grid->SetCellValue(InsertPos, 1, wxStrDispTime);
 
-		wxString wxStrDispNum = wxString::Format(wxT("%f"), MyGridItemNode->fItemNum);
+		wxString wxStrDispNum = wxString::Format(wxT("%.3f"), MyGridItemNode->fItemNum);
 		m_grid->SetCellValue(InsertPos, 2, wxStrDispNum);
 
 		m_grid->SetCellBackgroundColour(backgroundColor, InsertPos, 0);

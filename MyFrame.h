@@ -26,6 +26,7 @@ private:
 	wxTextCtrl*			MonTextCtrl;
 
 	int					InsertPos;
+	MyTypeTotalNum		typeTotalNum;
 	pMyGridItem			pMyGridItemHead;
 
 	DECLARE_EVENT_TABLE()

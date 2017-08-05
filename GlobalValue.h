@@ -8,6 +8,12 @@ using namespace std;
 typedef unsigned char		uchar;
 typedef unsigned int		uint;
 
+typedef struct stTypeTotalNum
+{
+	double		fType0TotalNum;
+	double		fType1TotalNum;
+	double		fTotalNum;
+}MyTypeTotalNum, *pMyTypeTotalNum;
 
 typedef struct stTime
 {
