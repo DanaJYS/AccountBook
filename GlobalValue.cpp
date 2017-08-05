@@ -6,6 +6,11 @@ MyTime EnTimeToChTime(const string& inTime)
 	int k = 0;
 	int i = 0, j = 0;
 
+	string strMonth[2][12] = {
+		{"Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"},
+		{"01","02","03","04","05","06","07","08","09","10","11","12"}
+	};
+
 	while (inTime[j] != '\0')
 	{
 		j++;
@@ -26,7 +31,15 @@ MyTime EnTimeToChTime(const string& inTime)
 
 	MyTime outTime;
 	outTime.Year = strTime[k];
-	outTime.Month = strTime[1];
+	for (int m=0; m<12; m++)
+	{
+		if (strTime[1] == strMonth[0][m])
+		{
+			outTime.Month = strMonth[1][m];
+			break;
+		}
+	}
+
 	outTime.Day = strTime[2];
 	outTime.hmsTime = strTime[3];
 
